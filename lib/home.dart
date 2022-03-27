@@ -8,8 +8,44 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late List<DataRow> lsTimer;
+
   @override
   Widget build(BuildContext context) {
+    lsTimer = [];
+    Data.list.forEach((key, value) {
+      var color;
+      var icon;
+      if (DateTime.now().millisecondsSinceEpoch >= value) {
+        color = Colors.green;
+        icon = Icons.check;
+      }
+      else {
+        color = Colors.red;
+        icon = Icons.close;
+      }
+
+      lsTimer.add(DataRow(
+        cells: [
+          DataCell(Text(key)),
+          DataCell(Icon(
+            icon,
+            color: color,
+          ),),
+          DataCell(IconButton(
+            onPressed: () {
+              Data.list.removeWhere((key2, value2) => value2 == value);
+              Data.save();
+              setState(() {
+                
+              });
+            },
+            icon: Icon(Icons.delete),
+          )),
+        ]
+      ));
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Timer"),
@@ -24,48 +60,24 @@ class _HomeState extends State<Home> {
                 DataColumn(label: Text("Status")),
                 DataColumn(label: Text("Delete")),
               ],
-              rows: [
-                DataRow(
-                  cells: [
-                    DataCell(Text("arsenal")),
-                    DataCell(IconButton(
-                      onPressed: () {},
-                      color: Colors.red,
-                      icon: Icon(Icons.close),
-                    )),
-                    DataCell(IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.delete),
-                    )),
-                  ]
-                ),
-                DataRow(
-                  cells: [
-                    DataCell(Text("building")),
-                    DataCell(IconButton(
-                      onPressed: () {},
-                      color: Colors.green,
-                      icon: Icon(Icons.check),
-                    )),
-                    DataCell(IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.delete),
-                    )),
-                  ]
-                ),
-              ],
+              rows: lsTimer,
             ),
+            IconButton(onPressed: () {
+              setState(() {
+                
+              });
+            }, icon: Icon(Icons.refresh))
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           final _formKey = GlobalKey<FormState>();
           TextEditingController _controllerName = TextEditingController();
           TextEditingController _controllerHours = TextEditingController();
           TextEditingController _controllerMinutes = TextEditingController();
 
-          showCupertinoDialog(
+          await showCupertinoDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -142,6 +154,10 @@ class _HomeState extends State<Home> {
               );
             }
           );
+
+          setState(() {
+            
+          });
         },
         child: Icon(Icons.add),
       ),
